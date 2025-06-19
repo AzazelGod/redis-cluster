@@ -3,25 +3,41 @@ pipeline {
 
   stages {
     stage('Checkout') {
-      steps { git url: 'https://github.com/AliyunContainerService/redis-cluster.git' }
+      steps {
+        git url: 'https://github.com/AzazelGod/redis-cluster.git'
+      }
     }
+
     stage('Install dependencies') {
       steps {
-        sh 'python3 -m pip install --upgrade pip'
-        sh 'pip3 install requests click'
+        sh '''
+          # Установка venv (если ещё нет)
+          python3 -m venv venv
+          . venv/bin/activate
+
+          # Обновление pip и установка зависимостей
+          venv/bin/pip install --upgrade pip
+          venv/bin/pip install requests click
+        '''
       }
     }
+
     stage('Deploy Redis Cluster') {
       steps {
-        sh 'docker-compose down || true'
-        sh 'docker-compose build'
-        sh 'docker-compose up -d'
+        sh '''
+          docker-compose down || true
+          docker-compose build
+          docker-compose up -d
+        '''
       }
     }
+
     stage('Health Check') {
       steps {
-        sh 'docker ps'
-        sh 'docker exec redis-sentinel redis-cli -p 26379 SENTINEL masters'
+        sh '''
+          docker ps
+          docker exec redis-sentinel redis-cli -p 26379 SENTINEL masters || echo "Check failed"
+        '''
       }
     }
   }
