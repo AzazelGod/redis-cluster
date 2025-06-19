@@ -2,14 +2,18 @@ pipeline {
   agent any
 
   stages {
-    stage('Clone repo') {
+    stage('Clone') {
       steps {
         git url: 'https://github.com/AzazelGod/redis-cluster.git'
       }
     }
+
     stage('Deploy Redis Cluster') {
       steps {
-        sh 'docker-compose up -d --build'
+        dir('redis-cluster') {
+          sh 'ls -l'  // Для отладки — проверить, что есть в папке
+          sh 'docker-compose up -d --build'
+        }
       }
     }
   }
