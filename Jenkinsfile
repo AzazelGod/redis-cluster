@@ -4,7 +4,7 @@ pipeline {
   stages {
     stage('Clone') {
       steps {
-        git url: 'https://github.com/AzazelGod/redis-cluster.git'
+        git url: 'https://github.com/AliyunContainerService/redis-cluster.git'
       }
     }
 
